@@ -1,0 +1,1 @@
+web: java $JVM_OPTS -cp target/uberjar/gen-czech-birth-code-0.1.0-SNAPSHOT-standalone.jar clojure.main -m gen-czech-birth-code.core
