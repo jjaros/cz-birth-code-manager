@@ -61,12 +61,20 @@
         rand-suffix-base (format "%03d" (rand-int cfg/birth-code-suffix-max-range))]
     [(str year-part month-part day-part) (str (calculate-suffix (format-date birth-date "yyyy") month-part day-part rand-suffix-base))]))
 
+(defn parse-or-generate-date "Parse Date from given input date if is passed. Otherwise generates random date."
+  ([] (parse-or-generate-date nil))
+  ([date]
+   (if (nil? date) 
+     (sysdate-minus-offset-days (get-random-offset-days))
+     (time-format/parse cfg/input-date-formatter date))))
+
 (defn generate-birth-code "API entrypoint: Provides HTTP response containing JSON with generated data on the birth of person." 
-  [req]
+  ([] (generate-birth-code nil))
+  ([required-date]
   {:status  200
    :headers {"Content-Type" "application/json; charset=UTF-8"}
    :body    (->>
-             (let [birth-date (sysdate-minus-offset-days (get-random-offset-days))
+             (let [birth-date (parse-or-generate-date required-date)
                    gender (get cfg/number-gender-mapping (rand-int 2))
                    birth-code-data (to-birth-code-data gender birth-date)]
                (json/write-str {
@@ -75,11 +83,13 @@
                                 :birth-date (str (format-date  birth-date "yyyy-MM-dd")),
                                 :birth-code (str (first birth-code-data) (last birth-code-data)),
                                 :birth-code-formatted (str (first birth-code-data) "/" (last birth-code-data))
-                                })))})
+                                })))}))
 
 (defroutes app-routes "Application routes/endpoints definitions."
   (context "/v1/b-code" []
-    (GET "/generate" [] generate-birth-code)
+    (context "/generate" []
+      (GET "/random" [] (generate-birth-code))
+      (GET "/:required-date" [required-date] (generate-birth-code required-date)))
     ; (POST "/validate" [birth-code] validate-birth-code)
     (route/not-found "Resource not found!"))
   (route/not-found "Resource not found!"))

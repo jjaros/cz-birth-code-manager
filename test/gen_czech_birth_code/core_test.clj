@@ -90,3 +90,28 @@
       3 (to-birth-code-data :male (time/date-time 1953 11 23))
       4 (to-birth-code-data :female (time/date-time 1954 3 9))
       4 (to-birth-code-data :male (time/date-time 1954 3 9)))))
+
+(deftest test-generate-date
+  (testing "Test generate random date if required date isn't passed to function."
+    (are [result-date] (is (not (nil? result-date)))
+      (parse-or-generate-date)
+      (parse-or-generate-date nil))))
+
+(deftest test-parse-date
+  (testing "Test parse Date by given input date."
+    (are [expected actual] (= expected actual)
+      (time/date-time 1991 11 23) (parse-or-generate-date "19911123")
+      (time/date-time 1953 11 23) (parse-or-generate-date "19531123")
+      (time/date-time 1954 3 9) (parse-or-generate-date "19540309"))))
+
+(deftest test-parse-invalid-format-date
+  (testing "Test parse Date by given input date - invalid input dates."
+    (are [invalid-date expected-msg] (is (thrown-with-msg? IllegalArgumentException expected-msg (parse-or-generate-date invalid-date)))
+      "" #"Invalid format"
+      "  " #"Invalid format"
+      "1999" #"Invalid format"
+      "199912" #"Invalid format"
+      "1012" #"Invalid format"
+      "1999/10/12" #"Invalid format"
+      "19991312" #"Cannot parse"
+      "19991232" #"Cannot parse")))

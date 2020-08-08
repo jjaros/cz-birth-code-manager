@@ -1,8 +1,12 @@
 (ns gen-czech-birth-code.config
+  (:require [clj-time.format :as time-format])
   (:gen-class))
 
 ;; year days count (the leap year is not considered)
 (def ^:const days-in-year 365)
+
+;; the Date formatter with supported format of Date
+(def input-date-formatter (time-format/formatter "yyyyMMdd"))
 
 ;; min edge of interval (in years) for generated birth date
 (def ^:const min-required-age 1)
