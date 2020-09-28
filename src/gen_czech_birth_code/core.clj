@@ -79,10 +79,10 @@
                    birth-code-data (to-birth-code-data gender birth-date)]
                (json/write-str {
                                 :gender (str/upper-case gender)
-                                :is-adult (not (time/within? (get-under-age-interval) birth-date)),
-                                :birth-date (str (format-date  birth-date "yyyy-MM-dd")),
-                                :birth-code (str (first birth-code-data) (last birth-code-data)),
-                                :birth-code-formatted (str (first birth-code-data) "/" (last birth-code-data))
+                                :isAdult (not (time/within? (get-under-age-interval) birth-date)),
+                                :birthDate (str (format-date  birth-date "yyyy-MM-dd")),
+                                :birthCode (str (first birth-code-data) (last birth-code-data)),
+                                :birthCodeFormatted (str (first birth-code-data) "/" (last birth-code-data))
                                 })))}))
 
 (defroutes app-routes "Application routes/endpoints definitions."
